@@ -56,7 +56,6 @@ namespace FlowChar
             IntPtr hemfSrc,   // Handle to EMF
             String lpszFile // File
         );
-
         [DllImport("gdi32.dll")]
         static extern int DeleteEnhMetaFile(  // Delete EMF
             IntPtr hemf // Handle to EMF
