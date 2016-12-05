@@ -1,0 +1,10 @@
+E:\Study\github\FlowChart\Output\FlowChar.exe
+E:\Study\github\FlowChart\Output\FlowChar.pdb
+E:\Study\github\FlowChart\FlowChar\obj\Debug\FlowChar.csprojResolveAssemblyReference.cache
+E:\Study\github\FlowChart\FlowChar\obj\Debug\FlowChar.FormLinkProperty.resources
+E:\Study\github\FlowChart\FlowChar\obj\Debug\FlowChar.FormNodeProperty.resources
+E:\Study\github\FlowChart\FlowChar\obj\Debug\FlowChar.FormPic.resources
+E:\Study\github\FlowChart\FlowChar\obj\Debug\FlowChar.FormWorkFlow.resources
+E:\Study\github\FlowChart\FlowChar\obj\Debug\FlowChar.csproj.GenerateResource.Cache
+E:\Study\github\FlowChart\FlowChar\obj\Debug\FlowChar.exe
+E:\Study\github\FlowChart\FlowChar\obj\Debug\FlowChar.pdb
