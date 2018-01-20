@@ -1,8 +1,0 @@
-E:\Study\github\FlowChart\Output\Lassalle.Flow.dll
-E:\Study\github\FlowChart\Output\Lassalle.Flow.pdb
-E:\Study\github\FlowChart\AddFlow\obj\Debug\Lassalle.Flow.AddFlow.resources
-E:\Study\github\FlowChart\AddFlow\obj\Debug\Lassalle.Flow.InPlaceTextBox.resources
-E:\Study\github\FlowChart\AddFlow\obj\Debug\Lassalle.Flow.af.resources
-E:\Study\github\FlowChart\AddFlow\obj\Debug\Lassalle.AddFlow.csproj.GenerateResource.Cache
-E:\Study\github\FlowChart\AddFlow\obj\Debug\Lassalle.Flow.dll
-E:\Study\github\FlowChart\AddFlow\obj\Debug\Lassalle.Flow.pdb
