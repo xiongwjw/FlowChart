@@ -1,0 +1,15 @@
+Debug/
+Release/
+obj/
+ipch/
+bin/
+log/
+.vs/
+*.aps
+*.ncb
+*.opt
+*.plg
+*.class
+*.sdf
+*.opensdf
+*.MinDependency
