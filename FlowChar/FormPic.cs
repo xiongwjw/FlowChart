@@ -13,38 +13,81 @@ namespace FlowChar
     public partial class FormPic : Form
     {
         public int imageIndex;
-        private readonly int eachRowCount = 9;
+        private  int eachRowCount = 9;
         private readonly int picWidth = 50;
         private readonly int picHeight = 50;
         private readonly int picInterval = 10;
-        public FormPic(List<Hashtable> imageList,List<string> folderList)
+        private List<List<ImageItem>> ImageList = null;
+        private List<string> _folderList;
+        public FormPic(List<List<ImageItem>> imageList,List<string> folderList)
         {
             InitializeComponent();
-            eachRowCount = this.Width / (picWidth + picInterval)-1;
-            ConstructPic(imageList, folderList);
+            this.ImageList = imageList;
+            _folderList = folderList;
+            InitTab();
         }
 
-        private void ConstructPic(List<Hashtable> imageList, List<string> folderList)
+        public void ReShow()
         {
+            tabControl.SelectedTab = tabControl.TabPages[0];
+            txtBox_search.Select();
+            txtBox_search.Focus();
+        }
+            
+
+        public void ReDraw(List<List<ImageItem>> imageList)
+        {
+            this.ImageList = imageList;
+            InitTab();
+        }
+
+        private void InitTab()
+        {
+
+            eachRowCount = this.Width / (picWidth + picInterval) - 1;
+            ConstructPic(ImageList, _folderList);
+        }
+
+        private void RemoveTab()
+        {
+            int count = tabControl.TabPages.Count;
+            
+            for (int i = 1; i < count; i++)
+            {
+                tabControl.TabPages.RemoveAt(1);
+            }
+                
+        }
+
+        private void ConstructPic(List<List<ImageItem>> imageList, List<string> folderList)
+        {
+            RemoveTab();
+            
             for (int i = 0; i < imageList.Count; i++)
             {
-                GenPic(imageList[i], folderList[i]);
+                GenPic(imageList[i], NewTab(folderList[i]),picInterval);
             }
+
         }
-        private void GenPic(Hashtable images, string folderName)
+        private TabPage NewTab(string name)
         {
             TabPage tp = new TabPage();
-            tp.Text = folderName;
+            tp.Text = name;
             tp.AutoScroll = true;
             tabControl.Controls.Add(tp);
-            int x = picInterval; int y = picInterval; int count = 0;
-            foreach (DictionaryEntry de in images)
+            return tp;
+        }
+        private void GenPic(List<ImageItem> images, Control tp, int startY)
+        {
+            tp.Controls.Clear();
+            int x = picInterval; int y = startY; int count = 0;
+            foreach (ImageItem de in images)
             {
                 Button button = new Button();
                 button.Location = new Point(x, y);
                 button.Size = new Size(picWidth, picHeight);
-                button.BackgroundImage = (Image)de.Value;
-                button.Tag = de.Key;
+                button.BackgroundImage = de.image;
+                button.Tag = de.imageIndex;
                 button.BackgroundImageLayout = ImageLayout.Stretch;
                 button.Click+=new EventHandler(button_Click);
                 tp.Controls.Add(button);
@@ -81,6 +124,39 @@ namespace FlowChar
                     break;
             }
             return false;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtBox_search.Text))
+                pnSearch.Controls.Clear();
+            else
+            {
+               // pnSearch.Controls.Clear();
+                GenPic(SearchImage(txtBox_search.Text), pnSearch, picInterval);
+            }
+        }
+        private List<ImageItem> SearchImage(string name)
+        {
+            List<ImageItem> imageList = new List<ImageItem>();
+            foreach (List<ImageItem> ls in this.ImageList)
+            {
+                List<ImageItem> lss = ls.Where(q => q.fileName.ToUpper().Contains(name.ToUpper())).ToList();
+                if(lss!=null)
+                    imageList.AddRange(lss);
+            }
+            return imageList;
+
+        }
+
+        private void tpSearch_Enter(object sender, EventArgs e)
+        {
+            txtBox_search.Focus(); txtBox_search.Select();
+        }
+
+        private void FormPic_Resize(object sender, EventArgs e)
+        {
+            InitTab();
         }
         
     }

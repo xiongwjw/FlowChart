@@ -11,6 +11,7 @@ namespace FlowChar
     {
         public List<SaveNode> NodeList;
         public List<SaveLink> LinkList;
+        public List<SaveImage> OutterImageList;
     }
     [Serializable]
     public class SaveNode
@@ -31,6 +32,9 @@ namespace FlowChar
         public int zOrder;
         public int allignment;
         public string picName;
+        public bool isContainer;
+        public int autoSize;
+        public int drawWidth;
     }
     [Serializable]
     public class SaveLink
@@ -45,7 +49,29 @@ namespace FlowChar
         public int outNode;
         public System.Drawing.PointF[] points;
         public int drawWidth;
+        public int orgArrowStyle;
+        public int orgArrowSize;
+        public int orgArrowAngle;
+        public bool orgArrowFill;
+        public int dstArrowStyle = 2;
+        public int dstArrowSize;
+        public int dstArrowAngle;
+        public bool dstArrowFill;
 
+    }
+
+    [Serializable]
+    public class SaveImage
+    {
+        public string md5;
+        public string base64Image;
+    }
+
+    public class ImageItem
+    {
+        public string fileName;
+        public int imageIndex;
+        public Image image;
     }
 
 }

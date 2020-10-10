@@ -657,6 +657,12 @@ namespace Lassalle.Flow{
     /// ////////////////////////////////////////////////////////////////
     /// </summary>
 
+    public class OnMoveEventArgs : EventArgs
+    {
+        public Node node { get; set; }
+        public PointF point { get; set; }
+    }
+
     public class AfterEditEventArgs : EventArgs {
         // Methods
         public AfterEditEventArgs(string text, Node node) {
@@ -2187,6 +2193,7 @@ namespace Lassalle.Flow{
             this.m_shape = new Shape();
             this.m_shadow = new Shadow();
             this.m_backMode = BackMode.Transparent;
+          //  this.m_alignment = Alignment.LeftJustifyTOP;
             this.m_alignment = Alignment.CenterMIDDLE;
             this.m_autoSize = AutoSizeSet.None;
             this.m_imagePosition = ImagePosition.RelativeToText;
@@ -3589,12 +3596,26 @@ namespace Lassalle.Flow{
                 this.Selected = false;
             }
         }
+
+        public void BringToFront()
+        {
+            SetZOrder(this.m_af.m_items.Count - 1);
+        }
+
+        public void SendToBack()
+        {
+            SetZOrder(0);
+        }
  
         internal void SetZOrder(int newValue) {
+            
             if (this.m_af.m_items.Count != 0) {
-                if ((newValue < 0) || (newValue >= this.m_af.m_items.Count)) {
-                    throw new ArgumentOutOfRangeException();
-                }
+                //if ((newValue < 0) || (newValue >= this.m_af.m_items.Count)) {
+                //    throw new ArgumentOutOfRangeException();
+                //}
+                if (newValue < 0) newValue = 0;
+                else if (newValue >= this.m_af.m_items.Count) newValue = this.m_af.m_items.Count - 1;
+
                 if (this.GetZOrder() != newValue) {
                     if (this.m_af.m_undo.CanUndoRedo && !this.m_af.m_undo.SkipUndo) {
                         this.m_af.m_undo.SubmitTask(new ZOrderIndexTask(this));
@@ -3615,6 +3636,12 @@ namespace Lassalle.Flow{
             get {
                 return this.m_af;
             }
+        }
+
+        public bool IsContainer
+        {
+            get { return m_isContainer;}
+            set { m_isContainer = value; }
         }
  
         public BackMode BackMode {
@@ -3954,7 +3981,9 @@ namespace Lassalle.Flow{
         internal bool m_flag;
  
         internal Font m_font;
- 
+
+        internal bool m_isContainer = false;
+
         internal bool m_hidden;
  
         internal bool m_logical;
@@ -9392,6 +9421,9 @@ namespace Lassalle.Flow{
             this.m_selectable = node.m_selectable;
             this.m_logical = node.m_logical;
             this.m_textMargin = node.m_textMargin;
+            //this.m_af = node.m_af;
+            //this.SetZOrder(0);
+            this.m_isContainer = node.IsContainer;
         }
  
         internal void DeleteLinks(LinksCollection.Type type) {
@@ -9505,7 +9537,7 @@ namespace Lassalle.Flow{
             Label_01F4:
                 flag1 = ((this.m_text != null) && (this.m_text.Length > 0)) && ((flags1 & NodeDrawFlags.Text) == NodeDrawFlags.Text);
             Image image1 = this.GetImage(this.m_imageIndex);
-            if(image1!=null)
+            if (image1 != null)
                 image1 = GetThumbnail(new Bitmap(image1), (int)this.Rect.Width, (int)this.Rect.Height);
             bool flag2 = (image1 != null) && ((flags1 & NodeDrawFlags.Image) == NodeDrawFlags.Image);
             if (flag1 || flag2) {
@@ -9544,13 +9576,12 @@ namespace Lassalle.Flow{
                 grfx.Restore(state2);
             }
         }
-
-        private  Bitmap GetThumbnail(Bitmap b, int destHeight, int destWidth)
+        private  Bitmap GetThumbnail(Bitmap b, int destWidth, int destHeight)
         {
             System.Drawing.Image imgSource = b;
             System.Drawing.Imaging.ImageFormat thisFormat = imgSource.RawFormat;
             int sW = 0, sH = 0;
-                       
+
             int sWidth = imgSource.Width;
             int sHeight = imgSource.Height;
             if (sHeight > destHeight || sWidth > destWidth)
@@ -9571,6 +9602,8 @@ namespace Lassalle.Flow{
                 sW = sWidth;
                 sH = sHeight;
             }
+
+
             Bitmap outBmp = new Bitmap(destWidth, destHeight);
             Graphics g = Graphics.FromImage(outBmp);
             g.Clear(Color.Transparent);

@@ -19,7 +19,7 @@
     </UpgradeBackupLocation>
     <StartupObject>
     </StartupObject>
-    <ApplicationIcon>app.ico</ApplicationIcon>
+    <ApplicationIcon>6.ico</ApplicationIcon>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -35,6 +35,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,6 +56,9 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -73,6 +77,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DragNode.cs" />
+    <Compile Include="FormAddImage.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAddImage.Designer.cs">
+      <DependentUpon>FormAddImage.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormLinkProperty.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -91,6 +101,18 @@
     <Compile Include="FormPic.Designer.cs">
       <DependentUpon>FormPic.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormSelectFolder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormSelectFolder.Designer.cs">
+      <DependentUpon>FormSelectFolder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormText.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormText.Designer.cs">
+      <DependentUpon>FormText.cs</DependentUpon>
+    </Compile>
     <Compile Include="Loger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Property.cs" />
@@ -105,6 +127,9 @@
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FormAddImage.resx">
+      <DependentUpon>FormAddImage.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormLinkProperty.resx">
       <DependentUpon>FormLinkProperty.cs</DependentUpon>
     </EmbeddedResource>
@@ -113,6 +138,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormPic.resx">
       <DependentUpon>FormPic.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormSelectFolder.resx">
+      <DependentUpon>FormSelectFolder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormText.resx">
+      <DependentUpon>FormText.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormWorkFlow.resx">
       <DependentUpon>FormWorkFlow.cs</DependentUpon>
@@ -125,6 +156,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="6.ico" />
     <Content Include="app.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -143,6 +175,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

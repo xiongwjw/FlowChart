@@ -32,9 +32,11 @@ namespace FlowChar
             nodeP.Tranparent=node.Transparent;
             nodeP.FillColor=node.FillColor;
             nodeP.DrawColor = node.DrawColor;
+            nodeP.DrawWidth = node.DrawWidth;
             nodeP.Dashstyle=node.DashStyle;
             nodeP.ShadowStyle = node.Shadow.Style;
             nodeP.ShapeStyle = node.Shape.Style;
+            nodeP.AutoSize = node.AutoSize;
             NodeProperty.SelectedObject = nodeP;
             txtMutilText.Text = node.Text;
             oldNodeText = node.Text;
@@ -44,8 +46,16 @@ namespace FlowChar
             switch (keyData)
             {
                 case Keys.Escape:
+                    if (txtMutilText.Text != oldNodeText)
+                        node.Text = txtMutilText.Text;
+                    this.DialogResult = DialogResult.Cancel;
                     this.Close();
                     break;
+                case Keys.Enter:
+                    btnOk_Click(null, null);
+                    this.Close();
+                    break;
+
                 default:
                     break;
             }
@@ -59,15 +69,18 @@ namespace FlowChar
             node.Transparent = nodeP.Tranparent;
             node.FillColor = nodeP.FillColor;
             node.DrawColor = nodeP.DrawColor;
+            node.DrawWidth = nodeP.DrawWidth;
             node.DashStyle = nodeP.Dashstyle;
             node.Shadow.Style = nodeP.ShadowStyle;
             node.Shape.Style = nodeP.ShapeStyle;
+            node.AutoSize = nodeP.AutoSize;
             if (txtMutilText.Text == oldNodeText)
             {
                 node.Text = nodeP.Text;
             }
             else
                 node.Text = txtMutilText.Text;
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
 
@@ -99,6 +112,20 @@ namespace FlowChar
                 this.parent.flowControl.Invalidate();
             }
             //isSave = false; SetTitle();
+        }
+
+        private void txtMutilText_KeyUp(object sender, KeyEventArgs e)
+        {
+            
+        }
+
+        private void btnMutiText_Click(object sender, EventArgs e)
+        {
+            FormText ft = new FormText(txtMutilText.Text);
+            if (ft.ShowDialog() == DialogResult.OK)
+            {
+                txtMutilText.Text = ft.InputText;
+            }
         }
 
 

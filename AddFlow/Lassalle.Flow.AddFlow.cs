@@ -70,6 +70,8 @@ namespace Lassalle.Flow {
 
         public delegate void AfterMoveEventHandler(object sender, EventArgs e);
 
+        public delegate void OnMoveEventHandler(object sender, OnMoveEventArgs e);
+
         public delegate void AfterResizeEventHandler(object sender, EventArgs e);
 
         public delegate void AfterSelectEventHandler(object sender, EventArgs e);
@@ -365,21 +367,55 @@ namespace Lassalle.Flow {
         /// 将结点添加到可拖拽列表
         /// </summary>
         private void AddNodeToDragList(Node node) {
-            if (!node.m_drag) {
+            if (!node.m_drag)
+            {
                 node.m_drag = true;
                 this.m_aDragNodes.Add(node);
-            }
-            foreach (Link link1 in node.m_aLinks) {
-                if (!link1.Existing || !link1.m_rigid) {
-                    continue;
+
+                foreach (Link link1 in node.m_aLinks)
+                {
+                    if (!link1.Existing || !link1.m_rigid)
+                    {
+                        continue;
+                    }
+                    Node node1 = link1.m_dst;
+                    if ((node1 != node) && !node1.m_drag)
+                    {
+                        node1.m_b1 = node.m_xMoveable;
+                        node1.m_b2 = node.m_yMoveable;
+                        this.AddNodeToDragList(node1);
+                    }
                 }
-                Node node1 = link1.m_dst;
-                if ((node1 != node) && !node1.m_drag) {
-                    node1.m_b1 = node.m_xMoveable;
-                    node1.m_b2 = node.m_yMoveable;
-                    this.AddNodeToDragList(node1);
-                }
+                //if (node.IsContainer)
+                //    foreach (Node childNode in GetChildNode(node))
+                //        AddNodeToDragList(childNode);
+                //if (node.IsContainer)
+                //no matter is container or not, draw all child node
+                    foreach (Node childNode in GetChildNode(node))
+                        AddNodeToDragList(childNode);
+
             }
+        }
+
+        public ArrayList GetChildNode(Node node)
+        {
+            ArrayList childNodes = new ArrayList();
+            int interval = 3;
+            
+            foreach (Node childNode in this.Nodes)
+            {
+                if (childNode.ImageIndex != -1)
+                    interval = 10;
+                else
+                    interval = 3;
+                if (node.Location.X < childNode.Location.X + interval
+                    && node.Location.Y < childNode.Location.Y + interval
+                    && childNode.Location.X + childNode.Rect.Width < node.Location.X + node.Rect.Width + interval
+                    && childNode.Location.Y + childNode.Rect.Height < node.Location.Y + node.Rect.Height + interval)
+                //if (node.Rect.IntersectsWith(childNode.Rect) && node.ZOrder<childNode.ZOrder)
+                    childNodes.Add(childNode);
+            }
+            return childNodes;
         }
  
         /// <summary>
@@ -1045,7 +1081,7 @@ namespace Lassalle.Flow {
                             continue;
                         }
                         Node node1 = (Node) item1;
-                        if (!node1.m_drag) {
+                        if (!node1.m_drag) {                           
                             node1.m_b1 = node1.m_xMoveable;
                             node1.m_b2 = node1.m_yMoveable;
                             if (node1.m_b1 || node1.m_b2) {
@@ -1111,6 +1147,7 @@ namespace Lassalle.Flow {
                             single2 = 0f;
                         }
                         node4.Move(new PointF(single1, single2));
+                        OnMoving(new OnMoveEventArgs { node=node4,point = node4.Location});
                     }
                 }
                 this.UpdateRect();
@@ -1784,13 +1821,14 @@ namespace Lassalle.Flow {
             }
         }
  
-        public Metafile ExportMetafile(bool selected, bool includeBackColor, bool zeroOrigin) {
-            return this.ExportMetafile(selected, includeBackColor, zeroOrigin, false, false);
-        }
  
-        public Metafile ExportMetafile(bool selected, bool includeBackColor, bool zeroOrigin, bool keepZoom) {
-            return this.ExportMetafile(selected, includeBackColor, zeroOrigin, keepZoom, false);
-        }
+        //public Metafile ExportMetafile(bool selected, bool includeBackColor, bool zeroOrigin) {
+        //    return this.ExportMetafile(selected, includeBackColor, zeroOrigin, false, false);
+        //}
+ 
+        //public Metafile ExportMetafile(bool selected, bool includeBackColor, bool zeroOrigin, bool keepZoom) {
+        //    return this.ExportMetafile(selected, includeBackColor, zeroOrigin, keepZoom, false);
+        //}
         /// <summary>
         /// 导出图元文件
         /// Metafile:
@@ -1798,23 +1836,36 @@ namespace Lassalle.Flow {
         /// 录，这些操作可以被记录（构造）和被回放（显示）。此类
         /// 不能继承。
         /// </summary>
-        public Metafile ExportMetafile(bool selected, bool includeBackColor, bool zeroOrigin, bool keepZoom, bool printerResolution) {
+        public Bitmap ExportBmp(bool selected, bool includeBackColor, bool zeroOrigin, bool keepZoom, bool printerResolution, Size size) {
             Graphics graphics1;
             this.m_drawAll = true;
-            if (printerResolution) {
+            if (printerResolution)
+            {
                 PrinterSettings settings1 = new PrinterSettings();
                 graphics1 = settings1.CreateMeasurementGraphics();
             }
-            else {
+            else
+            {
                 graphics1 = base.CreateGraphics();
             }
             IntPtr ptr1 = graphics1.GetHdc();
-            Metafile metafile1 = new Metafile(ptr1, EmfType.EmfPlusDual, "Created with AddFlow");
+            // Metafile metafile1 = new Metafile(ptr1, EmfType.EmfPlusDual, "Created with AddFlow");
+
+           // Bitmap bmp = new Bitmap(this.DisplayRectangle.Width, this.DisplayRectangle.Height);
+
+            Bitmap bmp = new Bitmap(size.Width, size.Height);
+
             graphics1.ReleaseHdc(ptr1);
             if (!printerResolution) {
                 graphics1.Dispose();
             }
-            graphics1 = Graphics.FromImage(metafile1);
+           // graphics1 = Graphics.FromImage(metafile1);
+            graphics1 = Graphics.FromImage(bmp);
+
+            graphics1.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
+            graphics1.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+
+
             if (keepZoom) {
                 this.CoordinatesDeviceToWorld(graphics1);
             }
@@ -1822,10 +1873,10 @@ namespace Lassalle.Flow {
                 graphics1.PageScale = this.m_pageScale;
                 graphics1.PageUnit = this.m_pageUnit;
             }
-            if (this.m_antiAliasing) {
-                graphics1.SmoothingMode = SmoothingMode.HighQuality;
-                graphics1.PixelOffsetMode = PixelOffsetMode.HighQuality;
-            }
+            //if (this.m_antiAliasing) {
+            //    graphics1.SmoothingMode = SmoothingMode.HighQuality;
+            //    graphics1.PixelOffsetMode = PixelOffsetMode.HighQuality;
+            //}
             if (includeBackColor) {
                 graphics1.Clear(this.BackColor);
             }
@@ -1840,13 +1891,16 @@ namespace Lassalle.Flow {
                     item1.Draw(graphics1);
                 }
             }
-            if (this.m_antiAliasing) {
+
+            if (this.m_antiAliasing)
+            {
                 graphics1.SmoothingMode = SmoothingMode.None;
                 graphics1.PixelOffsetMode = PixelOffsetMode.None;
             }
             graphics1.Dispose();
             this.m_drawAll = false;
-            return metafile1;
+            return bmp;
+            //return metafile1;
         }
  
         internal int GetChangedFlag() {
@@ -2354,7 +2408,13 @@ namespace Lassalle.Flow {
                 this.AfterMove(this, e);
             }
         }
- 
+
+        protected virtual void OnMoving(OnMoveEventArgs e)
+        {
+            if (this.OnMove != null)
+                this.OnMove(this,e);
+        }
+
         protected virtual void OnAfterResize(EventArgs e) {
             if (this.AfterResize != null) {
                 this.AfterResize(this, e);
@@ -2816,11 +2876,25 @@ namespace Lassalle.Flow {
                     this.Cursor = Cursors.Arrow;
                     return;
                 }
-                this.Cursor = Cursors.UpArrow;
+                if (this.CanDrawNode == true)
+                    this.Cursor = Cursors.Arrow;
+                else if (this.CanDrawLink == true)
+                    this.Cursor = Cursors.UpArrow;
+                else if (this.CanDrawLink == false && this.CanDrawNode == false)
+                    this.Cursor = Cursors.Hand;
+
+                //this.Cursor = Cursors.UpArrow;
                 return;
             }
             }
-            this.Cursor = Cursors.Arrow;
+            if (this.CanDrawNode == true)
+                this.Cursor = Cursors.Arrow;
+            else if (this.CanDrawLink == true)
+                this.Cursor = Cursors.UpArrow;
+            else if (this.CanDrawLink == false && this.CanDrawNode == false)
+                this.Cursor = Cursors.Hand;
+
+            //this.Cursor = Cursors.Hand;
         }
  
         public void SetSelChangedFlag(bool selChanged) {
@@ -3652,6 +3726,8 @@ namespace Lassalle.Flow {
         public event AddFlow.AfterEditEventHandler AfterEdit;
  
         public event AddFlow.AfterMoveEventHandler AfterMove;
+
+        public event AddFlow.OnMoveEventHandler OnMove;
  
         public event AddFlow.AfterResizeEventHandler AfterResize;
  
